@@ -88,6 +88,65 @@ function extractUrls(html: string, baseUrl: string): string[] {
   return [...urls];
 }
 
+async function performScrape(targetUrl: string, limit = MAX_RESOURCES) {
+  const target = new URL(targetUrl);
+  const rootRes = await fetchWithTimeout(target.toString());
+  if (!rootRes.ok) throw new Error(`Site returned ${rootRes.status}`);
+  const rootHtml = await rootRes.text();
+  const rootCT = rootRes.headers.get("content-type") || "text/html";
+
+  const resourceMap = new Map<string, { type: RType; filename: string; source_url: string; size: number; content_type: string | null }>();
+  resourceMap.set(target.toString(), {
+    type: "html",
+    filename: "index.html",
+    source_url: target.toString(),
+    size: new Blob([rootHtml]).size,
+    content_type: rootCT,
+  });
+  const extras = [
+    new URL("/robots.txt", target).toString(),
+    new URL("/sitemap.xml", target).toString(),
+    new URL("/favicon.ico", target).toString(),
+  ];
+  const discovered = extractUrls(rootHtml, target.toString());
+  const all = [...new Set([...discovered, ...extras])].slice(0, limit);
+  const BATCH = 12;
+  for (let i = 0; i < all.length; i += BATCH) {
+    const slice = all.slice(i, i + BATCH);
+    await Promise.all(slice.map(async (u) => {
+      try {
+        const res = await fetchWithTimeout(u, { method: "GET" });
+        if (!res.ok) return;
+        const ct = res.headers.get("content-type") || undefined;
+        const len = Number(res.headers.get("content-length") || 0);
+        let size = len;
+        if (!size) {
+          const buf = await res.arrayBuffer();
+          size = buf.byteLength;
+        }
+        resourceMap.set(u, {
+          type: classify(u, ct),
+          filename: filenameFrom(u),
+          source_url: u,
+          size,
+          content_type: ct ?? null,
+        });
+      } catch { /* skip */ }
+    }));
+  }
+  const resources = [...resourceMap.values()];
+  const totalSize = resources.reduce((s, r) => s + r.size, 0);
+  return { resources, totalSize };
+}
+
+export const scrapePublic = createServerFn({ method: "POST" })
+  .inputValidator((input) => z.object({ url: z.string().url() }).parse(input))
+  .handler(async ({ data }) => {
+    const { resources, totalSize } = await performScrape(data.url, 100);
+    // Guest watermark: cap exposed resources
+    return { resources: resources.slice(0, 50), totalSize, watermarked: true };
+  });
+
 export const startScrape = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => z.object({ url: z.string().url() }).parse(input))
