@@ -65,19 +65,24 @@ export function HowItWorks() {
       </button>
       {open && (
         <div className="border-t border-border bg-background/60 px-6 py-6">
-          <article
-            className="prose prose-sm max-w-none
-              prose-headings:font-semibold prose-headings:text-foreground
-              prose-h2:mt-0 prose-h2:text-xl
-              prose-h3:text-base prose-h3:mt-6
-              prose-p:text-muted-foreground prose-p:leading-relaxed
-              prose-li:text-muted-foreground prose-li:my-0.5
-              prose-strong:text-foreground
-              prose-code:rounded prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:text-foreground prose-code:before:content-none prose-code:after:content-none
-              prose-blockquote:border-l-primary prose-blockquote:bg-primary/5 prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:rounded-r prose-blockquote:not-italic prose-blockquote:font-normal prose-blockquote:text-foreground/80
-              prose-ol:text-muted-foreground prose-ol:my-3"
-          >
-            <ReactMarkdown>{GUIDE}</ReactMarkdown>
+          <article className="space-y-3 text-sm leading-relaxed">
+            <ReactMarkdown
+              components={{
+                h2: ({ children }) => <h2 className="text-xl font-semibold text-foreground">{children}</h2>,
+                h3: ({ children }) => <h3 className="mt-5 text-base font-semibold text-foreground">{children}</h3>,
+                p: ({ children }) => <p className="text-muted-foreground">{children}</p>,
+                ul: ({ children }) => <ul className="ml-5 list-disc space-y-1 text-muted-foreground marker:text-primary/60">{children}</ul>,
+                ol: ({ children }) => <ol className="ml-5 list-decimal space-y-1 text-muted-foreground marker:text-primary">{children}</ol>,
+                li: ({ children }) => <li className="pl-1">{children}</li>,
+                strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
+                code: ({ children }) => <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em] text-foreground">{children}</code>,
+                blockquote: ({ children }) => (
+                  <blockquote className="rounded-r border-l-2 border-primary bg-primary/5 px-4 py-2 text-foreground/80">{children}</blockquote>
+                ),
+              }}
+            >
+              {GUIDE}
+            </ReactMarkdown>
           </article>
         </div>
       )}
