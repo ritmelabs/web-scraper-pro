@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { scrapePublic } from "@/lib/scrape.functions";
 import { GUEST_LIMIT, getGuestCount, guestRemaining, incrementGuestCount } from "@/lib/guest";
 import { ConversionModal } from "@/components/ConversionModal";
+import { HowItWorks } from "@/components/HowItWorks";
+import { ImageGallery } from "@/components/ImageGallery";
 
 export const Route = createFileRoute("/guest")({
   component: Guest,
@@ -73,6 +75,10 @@ function Guest() {
           </Button>
         </form>
 
+        {!results && <HowItWorks />}
+
+
+
         {remaining === 0 && !results && (
           <div className="mt-6 rounded-lg border border-border bg-card p-4 text-center text-sm">
             You've used your free scans. <button onClick={() => setShowModal(true)} className="font-medium text-primary underline">Create a free account</button> to continue.
@@ -104,6 +110,9 @@ function Guest() {
                 </tbody>
               </table>
             </div>
+
+            <ImageGallery images={results.filter((r) => r.type === "image")} />
+
             <div className="mt-6 rounded-lg border border-dashed border-border bg-card p-6 text-center">
               <p className="text-sm text-muted-foreground">Want to download these as a ZIP, save them to your library, and run AI analysis?</p>
               <Button onClick={() => setShowModal(true)} className="mt-3">Create free account</Button>
