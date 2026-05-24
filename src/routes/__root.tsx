@@ -77,11 +77,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "SiteHarvest — Download every resource from any website" },
       { name: "description", content: "Scrape and download all assets (HTML, CSS, JS, images, fonts, docs) from any website as a ZIP. Sign in with Google to get started." },
       { name: "author", content: "SiteHarvest" },
-      { property: "og:title", content: "SiteHarvest — Universal Website Resource Scraper" },
-      { property: "og:description", content: "Pull every asset from a website and download them in one click." },
+      { property: "og:title", content: "SiteHarvest — Download every resource from any website" },
+      { property: "og:description", content: "Scrape and download all assets (HTML, CSS, JS, images, fonts, docs) from any website as a ZIP. Sign in with Google to get started." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "SiteHarvest — Download every resource from any website" },
+      { name: "twitter:description", content: "Scrape and download all assets (HTML, CSS, JS, images, fonts, docs) from any website as a ZIP. Sign in with Google to get started." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/66979d24-be3a-45a8-853a-3168db848327" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/66979d24-be3a-45a8-853a-3168db848327" },
     ],
     links: [
       {
