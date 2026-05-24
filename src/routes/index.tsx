@@ -7,6 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/auth";
+import { Testimonials } from "@/components/Testimonials";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -206,6 +207,9 @@ function Landing() {
           </div>
         </div>
       </section>
+
+      {/* Testimonials */}
+      <Testimonials />
 
       {/* CTA */}
       <section className="py-24">
