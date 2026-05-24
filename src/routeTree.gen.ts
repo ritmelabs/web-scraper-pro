@@ -9,38 +9,85 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppHistoryRouteImport } from './routes/app.history'
+import { Route as AppJobJobIdRouteImport } from './routes/app.job.$jobId'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/app/',
+  path: '/app/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppHistoryRoute = AppHistoryRouteImport.update({
+  id: '/app/history',
+  path: '/app/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppJobJobIdRoute = AppJobJobIdRouteImport.update({
+  id: '/app/job/$jobId',
+  path: '/app/job/$jobId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/app/history': typeof AppHistoryRoute
+  '/app/': typeof AppIndexRoute
+  '/app/job/$jobId': typeof AppJobJobIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/app/history': typeof AppHistoryRoute
+  '/app': typeof AppIndexRoute
+  '/app/job/$jobId': typeof AppJobJobIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/app/history': typeof AppHistoryRoute
+  '/app/': typeof AppIndexRoute
+  '/app/job/$jobId': typeof AppJobJobIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/login' | '/app/history' | '/app/' | '/app/job/$jobId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/login' | '/app/history' | '/app' | '/app/job/$jobId'
+  id: '__root__' | '/' | '/login' | '/app/history' | '/app/' | '/app/job/$jobId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LoginRoute: typeof LoginRoute
+  AppHistoryRoute: typeof AppHistoryRoute
+  AppIndexRoute: typeof AppIndexRoute
+  AppJobJobIdRoute: typeof AppJobJobIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +95,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/': {
+      id: '/app/'
+      path: '/app'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/history': {
+      id: '/app/history'
+      path: '/app/history'
+      fullPath: '/app/history'
+      preLoaderRoute: typeof AppHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/job/$jobId': {
+      id: '/app/job/$jobId'
+      path: '/app/job/$jobId'
+      fullPath: '/app/job/$jobId'
+      preLoaderRoute: typeof AppJobJobIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LoginRoute: LoginRoute,
+  AppHistoryRoute: AppHistoryRoute,
+  AppIndexRoute: AppIndexRoute,
+  AppJobJobIdRoute: AppJobJobIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
