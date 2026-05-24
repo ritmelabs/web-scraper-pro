@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as GuestRouteImport } from './routes/guest'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppHistoryRouteImport } from './routes/app.history'
@@ -18,6 +19,11 @@ import { Route as AppJobJobIdRouteImport } from './routes/app.job.$jobId'
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuestRoute = GuestRouteImport.update({
+  id: '/guest',
+  path: '/guest',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -43,6 +49,7 @@ const AppJobJobIdRoute = AppJobJobIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/guest': typeof GuestRoute
   '/login': typeof LoginRoute
   '/app/history': typeof AppHistoryRoute
   '/app/': typeof AppIndexRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/guest': typeof GuestRoute
   '/login': typeof LoginRoute
   '/app/history': typeof AppHistoryRoute
   '/app': typeof AppIndexRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/guest': typeof GuestRoute
   '/login': typeof LoginRoute
   '/app/history': typeof AppHistoryRoute
   '/app/': typeof AppIndexRoute
@@ -65,14 +74,28 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/app/history' | '/app/' | '/app/job/$jobId'
+  fullPaths:
+    | '/'
+    | '/guest'
+    | '/login'
+    | '/app/history'
+    | '/app/'
+    | '/app/job/$jobId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/app/history' | '/app' | '/app/job/$jobId'
-  id: '__root__' | '/' | '/login' | '/app/history' | '/app/' | '/app/job/$jobId'
+  to: '/' | '/guest' | '/login' | '/app/history' | '/app' | '/app/job/$jobId'
+  id:
+    | '__root__'
+    | '/'
+    | '/guest'
+    | '/login'
+    | '/app/history'
+    | '/app/'
+    | '/app/job/$jobId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GuestRoute: typeof GuestRoute
   LoginRoute: typeof LoginRoute
   AppHistoryRoute: typeof AppHistoryRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -86,6 +109,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guest': {
+      id: '/guest'
+      path: '/guest'
+      fullPath: '/guest'
+      preLoaderRoute: typeof GuestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -121,6 +151,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GuestRoute: GuestRoute,
   LoginRoute: LoginRoute,
   AppHistoryRoute: AppHistoryRoute,
   AppIndexRoute: AppIndexRoute,
@@ -129,3 +160,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
