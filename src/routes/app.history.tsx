@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { formatDistanceToNow } from "date-fns";
 import { ExternalLink } from "lucide-react";
-import { AppShell } from "@/components/AppShell";
+
 import { listJobs } from "@/lib/scrape.functions";
 import { Badge } from "@/components/ui/badge";
 
