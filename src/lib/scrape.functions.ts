@@ -155,6 +155,24 @@ export const startScrape = createServerFn({ method: "POST" })
     let target: URL;
     try { target = new URL(data.url); } catch { throw new Error("Invalid URL"); }
 
+    // Quota check: count today's jobs
+    const startOfDay = new Date(); startOfDay.setUTCHours(0, 0, 0, 0);
+    const { count: todayCount } = await supabase
+      .from("scrape_jobs")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .gte("created_at", startOfDay.toISOString());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const subQuery: any = supabase.from("subscriptions");
+    const { data: sub } = await subQuery.select("tier,status,current_period_end").eq("user_id", userId).maybeSingle();
+    const active = sub && sub.status === "active" && (!sub.current_period_end || new Date(sub.current_period_end) > new Date());
+    const tier = active ? sub.tier : "free";
+    const limits: Record<string, number> = { free: 10, pro: 200, business: 1000, enterprise: 100000 };
+    const limit = limits[tier] ?? 10;
+    if ((todayCount ?? 0) >= limit) {
+      throw new Error(`Daily limit reached (${limit} scrapes on the ${tier} plan). Upgrade for higher limits.`);
+    }
+
     // Create job
     const { data: job, error: jobErr } = await supabase
       .from("scrape_jobs")
