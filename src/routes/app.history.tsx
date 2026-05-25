@@ -23,7 +23,7 @@ function History() {
   const { data, isLoading } = useQuery({ queryKey: ["jobs"], queryFn: () => fn() });
 
   return (
-    <AppShell>
+    <div className="mx-auto max-w-5xl">
       <h1 className="text-3xl font-bold">History</h1>
       <p className="mt-2 text-muted-foreground">Your past scrapes.</p>
 
@@ -46,6 +46,6 @@ function History() {
           </Link>
         ))}
       </div>
-    </AppShell>
+    </div>
   );
 }
