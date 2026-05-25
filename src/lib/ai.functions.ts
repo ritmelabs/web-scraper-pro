@@ -51,14 +51,15 @@ const PROMPTS: Record<AnalysisType, string> = {
   tech_stack: "Based on the resource URLs (JS/CSS files, CDNs, vendor patterns), infer the tech stack. List frameworks, libraries, analytics tools, CMS.",
 };
 
-async function getTier(supabase: ReturnType<typeof import("@supabase/supabase-js").createClient>, userId: string): Promise<Tier> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function getTier(supabase: any, userId: string): Promise<Tier> {
   const { data } = await supabase
     .from("subscriptions")
     .select("tier,status,current_period_end")
     .eq("user_id", userId)
     .maybeSingle();
   if (!data) return "free";
-  const active = data.status === "active" && (!data.current_period_end || new Date(data.current_period_end as string) > new Date());
+  const active = data.status === "active" && (!data.current_period_end || new Date(data.current_period_end) > new Date());
   return active ? (data.tier as Tier) : "free";
 }
 
