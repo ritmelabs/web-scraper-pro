@@ -84,7 +84,7 @@ export const runAnalysis = createServerFn({ method: "POST" })
       .limit(200);
 
     // Tier gating: free users get 1 lifetime AI analysis as a teaser
-    const tier = await getTier(supabase as never, userId);
+    const tier = await getTier(supabase, userId);
     if (!TIER_LIMITS[tier].aiEnabled) {
       const { count } = await supabase
         .from("ai_analyses")
