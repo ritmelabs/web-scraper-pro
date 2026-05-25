@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { Download, ExternalLink, Loader2, Package } from "lucide-react";
 import JSZip from "jszip";
 import { toast } from "sonner";
-import { AppShell } from "@/components/AppShell";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -79,11 +79,11 @@ function JobView() {
     }
   };
 
-  if (isLoading) return <AppShell><div className="text-muted-foreground">Loading…</div></AppShell>;
-  if (!data?.job) return <AppShell><div className="text-muted-foreground">Job not found</div></AppShell>;
+  if (isLoading) return <div className="mx-auto max-w-6xl"><div className="text-muted-foreground">Loading…</div></div>;
+  if (!data?.job) return <div className="mx-auto max-w-6xl"><div className="text-muted-foreground">Job not found</div></div>;
 
   return (
-    <AppShell>
+    <div className="mx-auto max-w-6xl">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <Badge variant={data.job.status === "completed" ? "default" : data.job.status === "failed" ? "destructive" : "secondary"}>{data.job.status}</Badge>
@@ -139,6 +139,6 @@ function JobView() {
           </tbody>
         </table>
       </div>
-    </AppShell>
+    </div>
   );
 }
