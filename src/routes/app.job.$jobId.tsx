@@ -93,9 +93,12 @@ function JobView() {
           </p>
           {data.job.error && <p className="mt-2 text-sm text-destructive">{data.job.error}</p>}
         </div>
-        <Button onClick={downloadAll} disabled={zipping || !data.resources.length} size="lg">
-          {zipping ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Packaging…</> : <><Package className="mr-2 h-4 w-4" />Download all as ZIP</>}
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline" size="lg"><Link to="/app/ai/$jobId" params={{ jobId: data.job.id }}>✨ Analyze with AI</Link></Button>
+          <Button onClick={downloadAll} disabled={zipping || !data.resources.length} size="lg">
+            {zipping ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Packaging…</> : <><Package className="mr-2 h-4 w-4" />Download all as ZIP</>}
+          </Button>
+        </div>
       </div>
 
       <div className="mt-6 flex flex-wrap gap-2">
