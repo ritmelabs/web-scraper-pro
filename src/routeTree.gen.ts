@@ -11,10 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as GuestRouteImport } from './routes/guest'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppScrapeRouteImport } from './routes/app.scrape'
 import { Route as AppHistoryRouteImport } from './routes/app.history'
+import { Route as AppBillingRouteImport } from './routes/app.billing'
 import { Route as AppJobJobIdRouteImport } from './routes/app.job.$jobId'
+import { Route as AppAiJobIdRouteImport } from './routes/app.ai.$jobId'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -26,80 +30,126 @@ const GuestRoute = GuestRouteImport.update({
   path: '/guest',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
-  id: '/app/',
-  path: '/app/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppScrapeRoute = AppScrapeRouteImport.update({
+  id: '/scrape',
+  path: '/scrape',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppHistoryRoute = AppHistoryRouteImport.update({
-  id: '/app/history',
-  path: '/app/history',
-  getParentRoute: () => rootRouteImport,
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBillingRoute = AppBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppJobJobIdRoute = AppJobJobIdRouteImport.update({
-  id: '/app/job/$jobId',
-  path: '/app/job/$jobId',
-  getParentRoute: () => rootRouteImport,
+  id: '/job/$jobId',
+  path: '/job/$jobId',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAiJobIdRoute = AppAiJobIdRouteImport.update({
+  id: '/ai/$jobId',
+  path: '/ai/$jobId',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
   '/guest': typeof GuestRoute
   '/login': typeof LoginRoute
+  '/app/billing': typeof AppBillingRoute
   '/app/history': typeof AppHistoryRoute
+  '/app/scrape': typeof AppScrapeRoute
   '/app/': typeof AppIndexRoute
+  '/app/ai/$jobId': typeof AppAiJobIdRoute
   '/app/job/$jobId': typeof AppJobJobIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/guest': typeof GuestRoute
   '/login': typeof LoginRoute
+  '/app/billing': typeof AppBillingRoute
   '/app/history': typeof AppHistoryRoute
+  '/app/scrape': typeof AppScrapeRoute
   '/app': typeof AppIndexRoute
+  '/app/ai/$jobId': typeof AppAiJobIdRoute
   '/app/job/$jobId': typeof AppJobJobIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
   '/guest': typeof GuestRoute
   '/login': typeof LoginRoute
+  '/app/billing': typeof AppBillingRoute
   '/app/history': typeof AppHistoryRoute
+  '/app/scrape': typeof AppScrapeRoute
   '/app/': typeof AppIndexRoute
+  '/app/ai/$jobId': typeof AppAiJobIdRoute
   '/app/job/$jobId': typeof AppJobJobIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/app'
     | '/guest'
     | '/login'
+    | '/app/billing'
     | '/app/history'
+    | '/app/scrape'
     | '/app/'
+    | '/app/ai/$jobId'
     | '/app/job/$jobId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/guest' | '/login' | '/app/history' | '/app' | '/app/job/$jobId'
-  id:
-    | '__root__'
+  to:
     | '/'
     | '/guest'
     | '/login'
+    | '/app/billing'
     | '/app/history'
+    | '/app/scrape'
+    | '/app'
+    | '/app/ai/$jobId'
+    | '/app/job/$jobId'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/guest'
+    | '/login'
+    | '/app/billing'
+    | '/app/history'
+    | '/app/scrape'
     | '/app/'
+    | '/app/ai/$jobId'
     | '/app/job/$jobId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
   GuestRoute: typeof GuestRoute
   LoginRoute: typeof LoginRoute
-  AppHistoryRoute: typeof AppHistoryRoute
-  AppIndexRoute: typeof AppIndexRoute
-  AppJobJobIdRoute: typeof AppJobJobIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -118,6 +168,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GuestRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -127,46 +184,75 @@ declare module '@tanstack/react-router' {
     }
     '/app/': {
       id: '/app/'
-      path: '/app'
+      path: '/'
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/scrape': {
+      id: '/app/scrape'
+      path: '/scrape'
+      fullPath: '/app/scrape'
+      preLoaderRoute: typeof AppScrapeRouteImport
+      parentRoute: typeof AppRoute
     }
     '/app/history': {
       id: '/app/history'
-      path: '/app/history'
+      path: '/history'
       fullPath: '/app/history'
       preLoaderRoute: typeof AppHistoryRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/billing': {
+      id: '/app/billing'
+      path: '/billing'
+      fullPath: '/app/billing'
+      preLoaderRoute: typeof AppBillingRouteImport
+      parentRoute: typeof AppRoute
     }
     '/app/job/$jobId': {
       id: '/app/job/$jobId'
-      path: '/app/job/$jobId'
+      path: '/job/$jobId'
       fullPath: '/app/job/$jobId'
       preLoaderRoute: typeof AppJobJobIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/ai/$jobId': {
+      id: '/app/ai/$jobId'
+      path: '/ai/$jobId'
+      fullPath: '/app/ai/$jobId'
+      preLoaderRoute: typeof AppAiJobIdRouteImport
+      parentRoute: typeof AppRoute
     }
   }
 }
 
+interface AppRouteChildren {
+  AppBillingRoute: typeof AppBillingRoute
+  AppHistoryRoute: typeof AppHistoryRoute
+  AppScrapeRoute: typeof AppScrapeRoute
+  AppIndexRoute: typeof AppIndexRoute
+  AppAiJobIdRoute: typeof AppAiJobIdRoute
+  AppJobJobIdRoute: typeof AppJobJobIdRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppBillingRoute: AppBillingRoute,
+  AppHistoryRoute: AppHistoryRoute,
+  AppScrapeRoute: AppScrapeRoute,
+  AppIndexRoute: AppIndexRoute,
+  AppAiJobIdRoute: AppAiJobIdRoute,
+  AppJobJobIdRoute: AppJobJobIdRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
   GuestRoute: GuestRoute,
   LoginRoute: LoginRoute,
-  AppHistoryRoute: AppHistoryRoute,
-  AppIndexRoute: AppIndexRoute,
-  AppJobJobIdRoute: AppJobJobIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

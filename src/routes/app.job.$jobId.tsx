@@ -1,11 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { Download, ExternalLink, Loader2, Package } from "lucide-react";
 import JSZip from "jszip";
 import { toast } from "sonner";
-import { AppShell } from "@/components/AppShell";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -79,11 +79,11 @@ function JobView() {
     }
   };
 
-  if (isLoading) return <AppShell><div className="text-muted-foreground">Loading…</div></AppShell>;
-  if (!data?.job) return <AppShell><div className="text-muted-foreground">Job not found</div></AppShell>;
+  if (isLoading) return <div className="mx-auto max-w-6xl"><div className="text-muted-foreground">Loading…</div></div>;
+  if (!data?.job) return <div className="mx-auto max-w-6xl"><div className="text-muted-foreground">Job not found</div></div>;
 
   return (
-    <AppShell>
+    <div className="mx-auto max-w-6xl">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <Badge variant={data.job.status === "completed" ? "default" : data.job.status === "failed" ? "destructive" : "secondary"}>{data.job.status}</Badge>
@@ -93,9 +93,12 @@ function JobView() {
           </p>
           {data.job.error && <p className="mt-2 text-sm text-destructive">{data.job.error}</p>}
         </div>
-        <Button onClick={downloadAll} disabled={zipping || !data.resources.length} size="lg">
-          {zipping ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Packaging…</> : <><Package className="mr-2 h-4 w-4" />Download all as ZIP</>}
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline" size="lg"><Link to="/app/ai/$jobId" params={{ jobId: data.job.id }}>✨ Analyze with AI</Link></Button>
+          <Button onClick={downloadAll} disabled={zipping || !data.resources.length} size="lg">
+            {zipping ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Packaging…</> : <><Package className="mr-2 h-4 w-4" />Download all as ZIP</>}
+          </Button>
+        </div>
       </div>
 
       <div className="mt-6 flex flex-wrap gap-2">
@@ -139,6 +142,6 @@ function JobView() {
           </tbody>
         </table>
       </div>
-    </AppShell>
+    </div>
   );
 }

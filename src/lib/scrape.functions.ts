@@ -155,6 +155,24 @@ export const startScrape = createServerFn({ method: "POST" })
     let target: URL;
     try { target = new URL(data.url); } catch { throw new Error("Invalid URL"); }
 
+    // Quota check: count today's jobs
+    const startOfDay = new Date(); startOfDay.setUTCHours(0, 0, 0, 0);
+    const { count: todayCount } = await supabase
+      .from("scrape_jobs")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .gte("created_at", startOfDay.toISOString());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const subQuery: any = supabase.from("subscriptions");
+    const { data: sub } = await subQuery.select("tier,status,current_period_end").eq("user_id", userId).maybeSingle();
+    const active = sub && sub.status === "active" && (!sub.current_period_end || new Date(sub.current_period_end) > new Date());
+    const tier = active ? sub.tier : "free";
+    const limits: Record<string, number> = { free: 10, pro: 200, business: 1000, enterprise: 100000 };
+    const limit = limits[tier] ?? 10;
+    if ((todayCount ?? 0) >= limit) {
+      throw new Error(`Daily limit reached (${limit} scrapes on the ${tier} plan). Upgrade for higher limits.`);
+    }
+
     // Create job
     const { data: job, error: jobErr } = await supabase
       .from("scrape_jobs")
@@ -256,4 +274,48 @@ export const listJobs = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { data } = await context.supabase.from("scrape_jobs").select("*").order("created_at", { ascending: false }).limit(50);
     return data ?? [];
+  });
+
+export const getDashboardStats = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const startOfDay = new Date(); startOfDay.setUTCHours(0, 0, 0, 0);
+    const startOfMonth = new Date(); startOfMonth.setUTCDate(1); startOfMonth.setUTCHours(0, 0, 0, 0);
+
+    const [todayQ, monthQ, totalQ, recentQ, aiQ, subQ] = await Promise.all([
+      supabase.from("scrape_jobs").select("id", { count: "exact", head: true }).eq("user_id", userId).gte("created_at", startOfDay.toISOString()),
+      supabase.from("scrape_jobs").select("id", { count: "exact", head: true }).eq("user_id", userId).gte("created_at", startOfMonth.toISOString()),
+      supabase.from("scrape_resources").select("id", { count: "exact", head: true }).eq("user_id", userId),
+      supabase.from("scrape_jobs").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(5),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (supabase.from("ai_analyses") as any).select("id", { count: "exact", head: true }).eq("user_id", userId),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (supabase.from("subscriptions") as any).select("tier,status,current_period_end").eq("user_id", userId).maybeSingle(),
+    ]);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sub: any = subQ.data;
+    const active = sub && sub.status === "active" && (!sub.current_period_end || new Date(sub.current_period_end) > new Date());
+    const tier = active ? sub.tier : "free";
+
+    return {
+      todayCount: todayQ.count ?? 0,
+      monthCount: monthQ.count ?? 0,
+      totalResources: totalQ.count ?? 0,
+      aiAnalyses: aiQ.count ?? 0,
+      recent: recentQ.data ?? [],
+      tier: tier as "free" | "pro" | "business" | "enterprise",
+    };
+  });
+
+export const getMyTier = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const subQuery: any = supabase.from("subscriptions");
+    const { data } = await subQuery.select("tier,status,current_period_end").eq("user_id", userId).maybeSingle();
+    const active = data && data.status === "active" && (!data.current_period_end || new Date(data.current_period_end) > new Date());
+    return { tier: (active ? data.tier : "free") as "free" | "pro" | "business" | "enterprise" };
   });
