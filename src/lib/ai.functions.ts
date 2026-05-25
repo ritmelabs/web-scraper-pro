@@ -151,7 +151,7 @@ export const runAnalysis = createServerFn({ method: "POST" })
         job_id: data.jobId,
         user_id: userId,
         type: data.type,
-        result: result as object,
+        result: result as never,
         model: "google/gemini-3-flash-preview",
       })
       .select().single();
