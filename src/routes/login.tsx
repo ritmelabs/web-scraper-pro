@@ -12,7 +12,14 @@ import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/login")({
   component: Login,
-  head: () => ({ meta: [{ title: "Sign in — SiteHarvest" }] }),
+  head: () => ({
+    meta: [
+      { title: "Sign in — SiteHarvest Pro" },
+      { name: "description", content: "Sign in to SiteHarvest Pro to access your scraping workspace, history, exports, and AI-powered analysis." },
+      { name: "robots", content: "noindex" },
+    ],
+    links: [{ rel: "canonical", href: "https://siteharvestpro.lovable.app/login" }],
+  }),
 });
 
 function Login() {

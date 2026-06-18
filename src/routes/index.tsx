@@ -13,10 +13,29 @@ export const Route = createFileRoute("/")({
   component: Landing,
   head: () => ({
     meta: [
-      { title: "SiteHarvest — AI-Powered Web Intelligence & Data Extraction" },
-      { name: "description", content: "Extract, analyze and organize web data professionally. AI-powered scraping, structured extraction, analytics and monitoring in one platform." },
-      { property: "og:title", content: "SiteHarvest — AI Web Intelligence Platform" },
+      { title: "SiteHarvest Pro — AI-Powered Web Intelligence & Data Extraction" },
+      { name: "description", content: "Extract, analyze and organize web data professionally. AI-powered scraping, structured extraction, analytics and monitoring in one premium platform." },
+      { property: "og:title", content: "SiteHarvest Pro — AI Web Intelligence Platform" },
       { property: "og:description", content: "The professional platform for web data extraction, analysis and intelligence." },
+      { property: "og:url", content: "https://siteharvestpro.lovable.app/" },
+      { name: "twitter:title", content: "SiteHarvest Pro — AI Web Intelligence Platform" },
+      { name: "twitter:description", content: "Extract, analyze and organize web data professionally." },
+    ],
+    links: [{ rel: "canonical", href: "https://siteharvestpro.lovable.app/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          name: "SiteHarvest Pro",
+          applicationCategory: "BusinessApplication",
+          operatingSystem: "Web",
+          description: "AI-powered web intelligence and data extraction platform.",
+          url: "https://siteharvestpro.lovable.app/",
+          offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+        }),
+      },
     ],
   }),
 });
