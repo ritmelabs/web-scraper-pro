@@ -14,7 +14,15 @@ import { ImageGallery } from "@/components/ImageGallery";
 
 export const Route = createFileRoute("/guest")({
   component: Guest,
-  head: () => ({ meta: [{ title: "Try it free — SiteHarvest" }] }),
+  head: () => ({
+    meta: [
+      { title: "Try it free — SiteHarvest Pro" },
+      { name: "description", content: "Run 2 free website scrapes as a guest. No signup required. Extract HTML, CSS, JS, images, and more in one ZIP." },
+      { property: "og:title", content: "Try SiteHarvest Pro Free" },
+      { property: "og:description", content: "2 free scrapes, no signup. Try the AI web intelligence platform now." },
+    ],
+    links: [{ rel: "canonical", href: "https://siteharvestpro.lovable.app/guest" }],
+  }),
 });
 
 type Resource = { type: string; filename: string; source_url: string; size: number; content_type: string | null };
