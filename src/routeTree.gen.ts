@@ -9,8 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as GuestRouteImport } from './routes/guest'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
@@ -20,6 +23,16 @@ import { Route as AppBillingRouteImport } from './routes/app.billing'
 import { Route as AppJobJobIdRouteImport } from './routes/app.job.$jobId'
 import { Route as AppAiJobIdRouteImport } from './routes/app.ai.$jobId'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -28,6 +41,11 @@ const LoginRoute = LoginRouteImport.update({
 const GuestRoute = GuestRouteImport.update({
   id: '/guest',
   path: '/guest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoute = AppRouteImport.update({
@@ -74,8 +92,11 @@ const AppAiJobIdRoute = AppAiJobIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/contact': typeof ContactRoute
   '/guest': typeof GuestRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/app/billing': typeof AppBillingRoute
   '/app/history': typeof AppHistoryRoute
   '/app/scrape': typeof AppScrapeRoute
@@ -85,8 +106,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/contact': typeof ContactRoute
   '/guest': typeof GuestRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/app/billing': typeof AppBillingRoute
   '/app/history': typeof AppHistoryRoute
   '/app/scrape': typeof AppScrapeRoute
@@ -98,8 +122,11 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/contact': typeof ContactRoute
   '/guest': typeof GuestRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/app/billing': typeof AppBillingRoute
   '/app/history': typeof AppHistoryRoute
   '/app/scrape': typeof AppScrapeRoute
@@ -112,8 +139,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/app'
+    | '/contact'
     | '/guest'
     | '/login'
+    | '/privacy'
+    | '/terms'
     | '/app/billing'
     | '/app/history'
     | '/app/scrape'
@@ -123,8 +153,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/contact'
     | '/guest'
     | '/login'
+    | '/privacy'
+    | '/terms'
     | '/app/billing'
     | '/app/history'
     | '/app/scrape'
@@ -135,8 +168,11 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/app'
+    | '/contact'
     | '/guest'
     | '/login'
+    | '/privacy'
+    | '/terms'
     | '/app/billing'
     | '/app/history'
     | '/app/scrape'
@@ -148,12 +184,29 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
+  ContactRoute: typeof ContactRoute
   GuestRoute: typeof GuestRoute
   LoginRoute: typeof LoginRoute
+  PrivacyRoute: typeof PrivacyRoute
+  TermsRoute: typeof TermsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -166,6 +219,13 @@ declare module '@tanstack/react-router' {
       path: '/guest'
       fullPath: '/guest'
       preLoaderRoute: typeof GuestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app': {
@@ -250,8 +310,11 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
+  ContactRoute: ContactRoute,
   GuestRoute: GuestRoute,
   LoginRoute: LoginRoute,
+  PrivacyRoute: PrivacyRoute,
+  TermsRoute: TermsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
