@@ -1,91 +1,47 @@
-import { useState } from "react";
-import ReactMarkdown from "react-markdown";
-import { ChevronDown, BookOpen } from "lucide-react";
+import { Link2, Sparkles, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-const GUIDE = `
-## Welcome to SiteHarvest 👋
-
-SiteHarvest is an **AI-powered web intelligence platform** that turns any
-public webpage into structured, downloadable data.
-
-### What we extract
-
-- 🌐 **HTML & metadata** — titles, descriptions, OpenGraph, schema.org
-- 🖼️ **Images & media** — all \`<img>\`, \`<video>\`, and OG images
-- 🎨 **Styles & scripts** — every linked CSS and JS asset
-- 🔤 **Fonts** — webfonts referenced in stylesheets
-- 📄 **Documents** — PDFs, docs, and downloadable files
-- 📧 **Contacts** — emails and social handles discovered on the page
-
-### How to use this tool
-
-1. Paste any **public URL** (\`https://...\`) into the field above.
-2. Click **Scrape** — we fetch the page, parse the DOM, and inventory every asset.
-3. Review the resource table and **image gallery** below.
-4. Sign up for a free account to **download as ZIP**, **export JSON/CSV**,
-   or run **AI analysis** (summary, keywords, SEO score) on the content.
-
-### Good to know
-
-> ⚖️  Only scrape sites you have permission to access. SiteHarvest respects
-> \`robots.txt\` and rate-limits every request.
-
-> 🔒  Guest scans are **watermarked** and capped at **50 resources** per job.
-> Authenticated users get full exports, history, and unlimited resources.
-
-### Pro tips
-
-- Start with the **homepage** of a site — it usually links to the richest assets.
-- For SPAs (React/Vue apps), try the **deep crawl** mode after signing in.
-- Combine with our **AI Summarizer** to get an executive brief in one click.
-`;
+const steps = [
+  {
+    icon: Link2,
+    title: "Paste a URL",
+    desc: "Drop in any public URL. SiteHarvest fetches the page and every linked resource it can safely reach.",
+  },
+  {
+    icon: Sparkles,
+    title: "Scrape & analyze",
+    desc: "We extract structured resources — images, scripts, metadata, contacts — and optionally run AI analysis on the content.",
+  },
+  {
+    icon: Download,
+    title: "Export & use",
+    desc: "Download as ZIP or JSON, sync to your workflow, or dig deeper with re-runs from your history.",
+  },
+];
 
 export function HowItWorks() {
-  const [open, setOpen] = useState(true);
   return (
-    <div className="mt-10 overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-card to-muted/30">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left transition-colors hover:bg-muted/40"
-      >
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
-            <BookOpen className="h-4 w-4 text-primary" />
-          </div>
-          <div>
-            <div className="text-sm font-semibold">How SiteHarvest works</div>
-            <div className="text-xs text-muted-foreground">A 30-second guide to the scraper</div>
-          </div>
+    <section id="how-it-works" className="border-t border-border bg-muted/20 py-24">
+      <div className="container mx-auto px-4">
+        <div className="mx-auto max-w-2xl text-center">
+          <Badge variant="outline" className="mb-3">How it works</Badge>
+          <h2 className="text-3xl font-bold md:text-4xl">From URL to structured data in three steps</h2>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="hidden sm:inline-flex">Markdown guide</Badge>
-          <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+        <div className="mx-auto mt-14 grid max-w-5xl gap-6 md:grid-cols-3">
+          {steps.map((s, i) => (
+            <div key={s.title} className="relative rounded-2xl border border-border bg-card p-6">
+              <div className="absolute -top-3 left-6 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                {i + 1}
+              </div>
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10">
+                <s.icon className="h-5 w-5 text-primary" />
+              </div>
+              <h3 className="mt-4 font-semibold">{s.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{s.desc}</p>
+            </div>
+          ))}
         </div>
-      </button>
-      {open && (
-        <div className="border-t border-border bg-background/60 px-6 py-6">
-          <article className="space-y-3 text-sm leading-relaxed">
-            <ReactMarkdown
-              components={{
-                h2: ({ children }) => <h2 className="text-xl font-semibold text-foreground">{children}</h2>,
-                h3: ({ children }) => <h3 className="mt-5 text-base font-semibold text-foreground">{children}</h3>,
-                p: ({ children }) => <p className="text-muted-foreground">{children}</p>,
-                ul: ({ children }) => <ul className="ml-5 list-disc space-y-1 text-muted-foreground marker:text-primary/60">{children}</ul>,
-                ol: ({ children }) => <ol className="ml-5 list-decimal space-y-1 text-muted-foreground marker:text-primary">{children}</ol>,
-                li: ({ children }) => <li className="pl-1">{children}</li>,
-                strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
-                code: ({ children }) => <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em] text-foreground">{children}</code>,
-                blockquote: ({ children }) => (
-                  <blockquote className="rounded-r border-l-2 border-primary bg-primary/5 px-4 py-2 text-foreground/80">{children}</blockquote>
-                ),
-              }}
-            >
-              {GUIDE}
-            </ReactMarkdown>
-          </article>
-        </div>
-      )}
-    </div>
+      </div>
+    </section>
   );
 }
