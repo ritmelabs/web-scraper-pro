@@ -1,13 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight, Sparkles, Globe, Brain, Activity, Download, Database,
   Layers, Shield, Lock, CheckCircle2, Search, FileJson, Mail, Image as ImageIcon,
-  Zap, BarChart3, Code2,
+  Zap, BarChart3, Code2, PlayCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/auth";
 import { Testimonials } from "@/components/Testimonials";
+import { HowItWorks } from "@/components/HowItWorks";
+import { Pricing } from "@/components/Pricing";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -47,7 +51,7 @@ const categories = [
   },
   {
     icon: Brain, name: "AI Analysis", desc: "Understand what you collect", color: "from-purple-500/20 to-pink-500/20",
-    items: ["AI Summarizer", "Keyword Analysis", "SEO Analyzer", "Content Classification", "Sentiment Analysis", "Trend Detection", "Competitor Analysis", "Smart Categorization", "Duplicate Detector"],
+    items: ["AI Summarizer", "Keyword Analysis", "SEO Analyzer", "Content Classification", "Sentiment Analysis", "Smart Categorization", "Duplicate Detector"],
   },
   {
     icon: Activity, name: "Monitoring", desc: "Track changes automatically", color: "from-amber-500/20 to-orange-500/20", soon: true,
@@ -58,7 +62,7 @@ const categories = [
     items: ["CSV / JSON / Excel / PDF Export", "Google Sheets Sync", "Notion Sync", "API Access", "Scheduled Scraping", "Workflow Builder"],
   },
   {
-    icon: Database, name: "Data Intelligence", desc: "Turn pages into datasets", color: "from-rose-500/20 to-red-500/20",
+    icon: Database, name: "Data Intelligence", desc: "Turn pages into datasets", color: "from-rose-500/20 to-red-500/20", soon: true,
     items: ["Dataset Cleaner", "Smart Search", "Auto-Tagging", "Cross-Site Compare", "Executive Briefs"],
   },
 ];
@@ -70,30 +74,133 @@ const trust = [
   { icon: Zap, label: "Rate-limit Safe" },
 ];
 
+const heroStats = [
+  { icon: FileJson, label: "Structured Data", value: 247 },
+  { icon: ImageIcon, label: "Images & Media", value: 89 },
+  { icon: Mail, label: "Contacts Found", value: 12 },
+  { icon: Code2, label: "Scripts & Styles", value: 156 },
+];
+
+function useCountUp(target: number, active: boolean, duration = 1200) {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (!active) return;
+    let raf = 0;
+    const start = performance.now();
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - start) / duration);
+      setN(Math.round(target * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, active, duration]);
+  return n;
+}
+
+function StatCard({ s, active }: { s: (typeof heroStats)[number]; active: boolean }) {
+  const n = useCountUp(s.value, active);
+  return (
+    <div className="rounded-lg border border-border bg-background p-4 text-left">
+      <s.icon className="h-4 w-4 text-primary" />
+      <div className="mt-2 text-2xl font-bold tabular-nums">{n}</div>
+      <div className="text-xs text-muted-foreground">{s.label}</div>
+    </div>
+  );
+}
+
+function ProductMockup() {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [active, setActive] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([e]) => e.isIntersecting && setActive(true),
+      { threshold: 0.3 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} className="mx-auto mt-16 max-w-5xl">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
+        <div className="flex items-center gap-1.5 border-b border-border bg-muted/40 px-4 py-3">
+          <div className="h-3 w-3 rounded-full bg-red-400/70" />
+          <div className="h-3 w-3 rounded-full bg-amber-400/70" />
+          <div className="h-3 w-3 rounded-full bg-emerald-400/70" />
+          <div className="ml-4 flex h-6 flex-1 items-center rounded-md bg-background/60 px-3 text-xs text-muted-foreground">
+            <Search className="mr-2 h-3 w-3" /> https://stripe.com
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4 p-6 md:grid-cols-4">
+          {heroStats.map((s) => <StatCard key={s.label} s={s} active={active} />)}
+        </div>
+        <div className="border-t border-border px-6 py-4">
+          <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
+            <div className="font-medium text-foreground">Recent resources</div>
+            <div>Live sample</div>
+          </div>
+          <div className="space-y-2">
+            {[
+              { type: "IMG", url: "/assets/hero.png", size: "184 KB" },
+              { type: "JS", url: "/js/checkout.min.js", size: "42 KB" },
+              { type: "CSS", url: "/css/app.a13b.css", size: "88 KB" },
+              { type: "META", url: "og:image · twitter:card · canonical", size: "—" },
+            ].map((r) => (
+              <div key={r.url} className="flex items-center gap-3 rounded-md border border-border/60 bg-background/50 px-3 py-2 text-xs">
+                <span className="min-w-[42px] rounded bg-primary/10 px-1.5 py-0.5 text-center font-mono text-[10px] font-semibold text-primary">{r.type}</span>
+                <span className="flex-1 truncate font-mono text-muted-foreground">{r.url}</span>
+                <span className="text-muted-foreground">{r.size}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <p className="mt-3 text-center text-xs text-muted-foreground">Sample output from a recent scan</p>
+    </div>
+  );
+}
+
+function Header() {
+  const { user } = useAuth();
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return (
+    <header className={`sticky top-0 z-40 border-b transition-all ${scrolled ? "border-border bg-background/85 backdrop-blur-xl shadow-sm" : "border-transparent bg-background/40 backdrop-blur"}`}>
+      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        <Link to="/" className="flex items-center gap-2 font-bold">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ backgroundImage: "var(--gradient-hero)" }}>
+            <Layers className="h-4 w-4 text-white" />
+          </div>
+          SiteHarvest
+        </Link>
+        <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
+          <a href="#features" className="hover:text-foreground">Features</a>
+          <a href="#how-it-works" className="hover:text-foreground">How it works</a>
+          <a href="#pricing" className="hover:text-foreground">Pricing</a>
+          <a href="#trust" className="hover:text-foreground">Security</a>
+        </nav>
+        <div className="flex items-center gap-2">
+          <Button asChild variant="ghost" size="sm"><Link to="/login">{user ? "Open app" : "Sign in"}</Link></Button>
+          <Button asChild size="sm"><Link to={user ? "/app" : "/guest"}>Start free <ArrowRight className="ml-1 h-3 w-3" /></Link></Button>
+        </div>
+      </div>
+    </header>
+  );
+}
+
 function Landing() {
   const { user } = useAuth();
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link to="/" className="flex items-center gap-2 font-bold">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ backgroundImage: "var(--gradient-hero)" }}>
-              <Layers className="h-4 w-4 text-white" />
-            </div>
-            SiteHarvest
-          </Link>
-          <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
-            <a href="#features" className="hover:text-foreground">Features</a>
-            <a href="#categories" className="hover:text-foreground">Platform</a>
-            <a href="#trust" className="hover:text-foreground">Security</a>
-          </nav>
-          <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" size="sm"><Link to="/login">{user ? "Open app" : "Sign in"}</Link></Button>
-            <Button asChild size="sm"><Link to={user ? "/app" : "/guest"}>Start free <ArrowRight className="ml-1 h-3 w-3" /></Link></Button>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero */}
       <section className="relative overflow-hidden">
@@ -106,7 +213,7 @@ function Landing() {
           </Badge>
           <h1 className="mx-auto max-w-4xl text-5xl font-bold tracking-tight md:text-7xl">
             Extract, Analyze & Organize <br className="hidden md:block" />
-            <span className="bg-clip-text text-transparent" style={{ backgroundImage: "var(--gradient-hero)" }}>Web Data Professionally</span>
+            <span className="animated-gradient-text bg-clip-text text-transparent">Web Data Professionally</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
             AI-powered website scraping, structured extraction, analytics, monitoring, and intelligent workflows — in one premium platform.
@@ -116,41 +223,17 @@ function Landing() {
               <Link to={user ? "/app" : "/guest"}>Start Free <ArrowRight className="ml-1 h-4 w-4" /></Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="h-12 px-6">
-              <Link to="/guest">Try Demo</Link>
-            </Button>
-            <Button asChild size="lg" variant="ghost" className="h-12 px-6">
-              <Link to="/login">Sign in</Link>
+              <a href="#how-it-works"><PlayCircle className="mr-1 h-4 w-4" /> See how it works</a>
             </Button>
           </div>
-          <p className="mt-4 text-xs text-muted-foreground">No credit card · 2 free scans as guest</p>
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> No credit card</span>
+            <span className="flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> 2 free scans</span>
+            <span className="flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> 500 resources / scan</span>
+            <span className="flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> ZIP + JSON export</span>
+          </div>
 
-          {/* Product preview mock */}
-          <div className="mx-auto mt-16 max-w-5xl">
-            <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
-              <div className="flex items-center gap-1.5 border-b border-border bg-muted/40 px-4 py-3">
-                <div className="h-3 w-3 rounded-full bg-red-400/70" />
-                <div className="h-3 w-3 rounded-full bg-amber-400/70" />
-                <div className="h-3 w-3 rounded-full bg-emerald-400/70" />
-                <div className="ml-4 flex h-6 flex-1 items-center rounded-md bg-background/60 px-3 text-xs text-muted-foreground">
-                  <Search className="mr-2 h-3 w-3" /> https://stripe.com
-                </div>
-              </div>
-              <div className="grid grid-cols-1 gap-4 p-6 md:grid-cols-4">
-                {[
-                  { icon: FileJson, label: "Structured Data", value: "247" },
-                  { icon: ImageIcon, label: "Images & Media", value: "89" },
-                  { icon: Mail, label: "Contacts Found", value: "12" },
-                  { icon: Code2, label: "Scripts & Styles", value: "156" },
-                ].map((s) => (
-                  <div key={s.label} className="rounded-lg border border-border bg-background p-4 text-left">
-                    <s.icon className="h-4 w-4 text-primary" />
-                    <div className="mt-2 text-2xl font-bold">{s.value}</div>
-                    <div className="text-xs text-muted-foreground">{s.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <ProductMockup />
         </div>
       </section>
 
@@ -178,6 +261,9 @@ function Landing() {
         </div>
       </section>
 
+      {/* How it works */}
+      <HowItWorks />
+
       {/* Categories */}
       <section id="categories" className="py-24">
         <div className="container mx-auto px-4">
@@ -191,7 +277,7 @@ function Landing() {
                 <div className={`absolute inset-0 -z-10 bg-gradient-to-br ${c.color} opacity-0 transition-opacity group-hover:opacity-100`} />
                 <div className="flex items-center justify-between">
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10"><c.icon className="h-5 w-5 text-primary" /></div>
-                  {c.soon && <Badge variant="secondary" className="text-[10px]">Soon</Badge>}
+                  {c.soon && <Badge variant="secondary" className="text-[10px]">Coming soon</Badge>}
                 </div>
                 <h3 className="mt-4 text-lg font-semibold">{c.name}</h3>
                 <p className="text-sm text-muted-foreground">{c.desc}</p>
@@ -207,6 +293,9 @@ function Landing() {
           </div>
         </div>
       </section>
+
+      {/* Pricing */}
+      <Pricing />
 
       {/* Trust */}
       <section id="trust" className="border-t border-border bg-muted/20 py-20">
@@ -244,12 +333,7 @@ function Landing() {
         </div>
       </section>
 
-      <footer className="border-t border-border py-8">
-        <div className="container mx-auto flex flex-col items-center justify-between gap-3 px-4 text-xs text-muted-foreground md:flex-row">
-          <div>© {new Date().getFullYear()} SiteHarvest · AI Web Intelligence Platform</div>
-          <div>Only scrape sites you have permission to. Respect each site's terms and robots.txt.</div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
